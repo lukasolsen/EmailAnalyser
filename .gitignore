@@ -1,0 +1,6 @@
+*.db
+/server/Scripts
+/server/Include
+/server/Lib
+*.pyc
+/server/pyvenv.cfg
