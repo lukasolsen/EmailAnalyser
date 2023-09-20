@@ -1,0 +1,8 @@
+uvicorn==0.23.2
+python-jose==3.3.0
+passlib==1.7.4
+bcrypt==4.0.1
+fastapi==0.103.1
+yara-python==4.3.1
+python-geoip==1.2
+python-geoip-geolite2==2015.303

@@ -4,3 +4,4 @@
 /server/Lib
 *.pyc
 /server/pyvenv.cfg
+*.env

@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends, status
-import service.parse as parser
 from pydantic import BaseModel
 import json
-from database.db import Database
-from auth.users import UserRegistration, UserLogin, register_user, login_user, verify_token, get_user_role
+from database.db import UserDatabase
+from auth.users import UserRegistration, UserLogin, register_user, login_user, verify_token
+from datetime import datetime
+import service.scan as scan
 
 
 class Email(BaseModel):
@@ -11,10 +12,9 @@ class Email(BaseModel):
 
 
 app = FastAPI()
-database = Database()
-database.init_db()
-conn = database.get_con()
-
+userDB = UserDatabase()
+userDB.init_db()
+conn = userDB.get_con()
 
 @app.get("/")
 def read_root():
@@ -38,8 +38,7 @@ async def login(user: UserLogin):
 @app.get("/check_token")
 async def check_token(access_token: str):
     verified = verify_token(access_token)
-    print("Verified:", verified)
-    if verified.__len__() > 0:
+    if verified:
         return verified
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -48,13 +47,31 @@ async def check_token(access_token: str):
 @app.post("/scan")
 async def scan_email(email_content: Email, access_token: str):
     verified = verify_token(access_token)
-    print("Verified:", verified.get("role"))
     if verified:
         if (verified.get("role") != "admin"):
             raise HTTPException(status_code=401, detail="Invalid credentials")
 
-        print("Received email_content:", email_content)
-        parsed_email = parser.parse_email(str(email_content.email_content))
-        return str(parsed_email)
+        scanModule = scan.Scanner()
+
+        # Analyze the email
+        analysis_result = scanModule.scan(str(email_content.email_content))
+
+        # Make a report of the analysis result
+        report = {
+            "yara_result": analysis_result.get("analysis_result"),
+            "email_data": analysis_result.get("parsed_email"),
+            #"geoip": analysis_result.get("geoip"),
+            "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+
+            # more information for the general report, such as comments, etc.
+            "comments": [],
+            "tags": [],
+            "status": "pending",
+  
+            "reporter": verified.get("sub")
+        }
+        print(report)
+
+        return "ok"
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
