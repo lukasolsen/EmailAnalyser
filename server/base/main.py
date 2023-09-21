@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from pydantic import BaseModel
 import json
-from database.db import UserDatabase
-from auth.users import UserRegistration, UserLogin, register_user, login_user, verify_token
+from database.db import UserDatabase, ReportDatabase
+from model.users import UserRegistration, UserLogin, register_user, login_user, verify_token
 from datetime import datetime
 import service.scan as scan
 
@@ -10,27 +10,32 @@ import service.scan as scan
 class Email(BaseModel):
     email_content: str
 
-
 app = FastAPI()
+
+# Initialize the user database
 userDB = UserDatabase()
 userDB.init_db()
-conn = userDB.get_con()
+userConn = userDB.get_con()
+
+# Initialize the report database
+reportDB = ReportDatabase()
+reportDB.init_db()
+reportConn = reportDB.get_con()
 
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
 
-
 # User registration endpoint
 @app.post("/register", response_model=str)
 async def register(user: UserRegistration):
-    return await register_user(user, conn)
+    return await register_user(user, userConn)
 
 
 # User login endpoint
 @app.post("/login", response_model=dict)
 async def login(user: UserLogin):
-    return await login_user(user, conn)
+    return await login_user(user, userConn)
 
 # Check token endpoint
 
