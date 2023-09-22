@@ -73,41 +73,49 @@ const Browse = () => {
       rating: 5,
     };
 
-    setProducts([product]);
+    // copy the product 25 times
+    for (let i = 0; i < 25; i++) {
+      //change the id of the product to be unique
+      setProducts((prevProducts) => [...prevProducts, { ...product, id: i }]);
+    }
+    console.log(products);
   }, []);
 
   return (
     <div>
       <div className="container mx-auto mt-8 text-center">
-        <div className="flex flex-row items-center">
-          <input
-            type="checkbox"
-            checked={selectedProducts?.length === products.length}
-            onChange={(e) => {
-              if (e.target.checked) {
-                setSelectedProducts(products);
-              } else {
-                setSelectedProducts([]);
-              }
-            }}
-          />
-          <Tabs
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            divStyle="flex justify-center space-x-4 mb-8 h-8 w-full"
-            buttonStyle="rounded-sm w-3/12"
-            activeButtonStyle="rounded-sm w-3/12 border-b-[3px] border-b-blue-600"
-            tabs={[
-              {
-                label: `Reports ${reportReports.length}/${reportReports.length}`,
-                value: "reports",
-              },
-              {
-                label: "Files",
-                value: "files",
-              },
-            ]}
-          />
+        <div className="flex flex-row items-center border-b border-blue-dark-600 pb-2">
+          <div className="flex flex-row items-center w-full">
+            <input
+              type="checkbox"
+              checked={selectedProducts?.length === products.length}
+              className="h-5 w-5 rounded-md border-gray-300 dark:border-white selection:border-blue-500"
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setSelectedProducts(products);
+                } else {
+                  setSelectedProducts([]);
+                }
+              }}
+            />
+            <Tabs
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              divStyle="flex justify-center space-x-4 h-8 w-full"
+              buttonStyle="rounded-sm w-3/12"
+              activeButtonStyle="rounded-sm w-3/12 border-b-[3px] border-b-blue-600"
+              tabs={[
+                {
+                  label: `Reports ${reportReports.length}/${reportReports.length}`,
+                  value: "reports",
+                },
+                {
+                  label: "Files",
+                  value: "files",
+                },
+              ]}
+            />
+          </div>
           <div className="flex flex-row">
             <button>
               <FaFileExport
@@ -132,6 +140,13 @@ const Browse = () => {
           dataKey="id"
           tableStyle={{ minWidth: "50rem" }}
           className=" text-gray-700 dark:text-white"
+          paginator
+          rows={5}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          paginatorTemplate={
+            "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+          }
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
         >
           <Column
             selectionMode="multiple"

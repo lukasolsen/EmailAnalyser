@@ -8,6 +8,41 @@
   color: rgb(55 65 81 / var(--tw-text-opacity)) !important;
 }
 
+.p-datatable-tbody tr {
+  background-color: transparent !important; /* Remove background color */
+}
+
+.p-paginator-bottom {
+  background: transparent !important;
+}
+
+.p-paginator-bottom > span > button {
+  color: rgb(55 65 81 / var(--tw-text-opacity)) !important;
+}
+
+.p-paginator-bottom > span > .p-highlight {
+  background: transparent !important;
+  color: rgb(
+    59 130 246 / var(--tw-text-opacity)
+  ) !important; /* blue 600 tailwind color */
+}
+
+.p-paginator-bottom > button {
+  color: rgb(55 65 81 / var(--tw-text-opacity)) !important;
+}
+
+.p-paginator-bottom > button:hover {
+  color: rgb(
+    59 130 246 / var(--tw-text-opacity)
+  ) !important; /* blue 600 tailwind color */
+  background: transparent !important;
+}
+
+.p-paginator-bottom .p-inputwrapper-filled {
+  color: rgb(55 65 81 / var(--tw-text-opacity)) !important;
+  background-color: transparent !important;
+}
+
 @media (prefers-color-scheme: dark) {
   .p-datatable-thead th {
     --tw-text-opacity: 1;
@@ -18,8 +53,34 @@
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
   }
-}
 
-.p-datatable-tbody tr {
-  background-color: transparent !important; /* Remove background color */
+  .p-paginator-bottom > span > button {
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
+  }
+
+  .p-paginator-bottom > span > button:hover {
+    --tw-text-opacity: 1;
+    color: rgb(59 130 246 / var(--tw-text-opacity)) !important;
+    background: transparent !important;
+  }
+
+  .p-paginator-bottom > button:hover {
+    --tw-text-opacity: 1;
+    color: rgb(59 130 246 / var(--tw-text-opacity)) !important;
+    background: transparent !important;
+  }
+
+  .p-paginator-bottom > button {
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
+  }
+
+  .p-paginator-bottom .p-inputwrapper-filled {
+    background-color: transparent !important;
+  }
+
+  .p-paginator-bottom .p-inputwrapper-filled > span {
+    color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
+  }
 }
