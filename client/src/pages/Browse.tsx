@@ -1,85 +1,55 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import Tabs from "../components/Common/Tabs";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { InputSwitch, InputSwitchChangeEvent } from "primereact/inputswitch";
 import { FaFileDownload, FaFileExport } from "react-icons/fa";
-
-interface Product {
-  id?: string;
-  code?: string;
-  name?: string;
-  description?: string;
-  image?: string;
-  price?: number;
-  category?: string;
-  quantity?: number;
-  inventoryStatus?: string;
-  rating?: number;
-}
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { IReport, addReport } from "../store/reports/actions";
 
 const Browse = () => {
-  // Dummy data for reports
-  const reportReports = [
-    {
-      id: 1,
-      title: "Report 1",
-      description: "This is the first report",
-    },
-    {
-      id: 2,
-      title: "Report 2",
-      description: "This is the second report",
-    },
-  ];
-
-  const fileReports = [
-    {
-      id: 1,
-      title: "File 1",
-      description: "This is the first file",
-    },
-  ];
+  const dispatch = useDispatch();
 
   const [activeTab, setActiveTab] = useState("reports");
-  const [reportsDisplaying, setReportsDisplaying] = useState(25); // The amount of reports displaying, default is 25
+  //const [reports, setReports] = useState<Report[]>([]);
+  const reports = useSelector((state: RootState) => state.reports.reports);
+
+  const [selectedReports, setSelectedReports] = useState<IReport[]>([]);
+  const [selectAllChecked, setSelectAllChecked] = useState(false);
 
   useEffect(() => {
-    //check the amount of reports displaying, if it is less than the amount of reports, then display the amount of reports, else display the amount of reports
-    if (reportsDisplaying < reportReports.length) {
-      setReportsDisplaying(reportsDisplaying);
-    } else {
-      setReportsDisplaying(reportReports.length);
-    }
-  }, [activeTab, reportReports.length, reportsDisplaying]);
-
-  const [products, setProducts] = useState<Product[]>([]);
-  const [selectedProducts, setSelectedProducts] = useState<Product[] | null>(
-    null
-  );
-
-  useEffect(() => {
-    const product = {
-      id: "1000",
-      code: "f230fh0g3",
-      name: "Bamboo Watch",
-      description: "Product Description",
-      image: "bamboo-watch.jpg",
-      price: 65,
-      category: "Accessories",
-      quantity: 24,
-      inventoryStatus: "INSTOCK",
-      rating: 5,
+    const report: IReport = {
+      hash: "24d004a104d4d54034dbcffc2a4b19a11f39008a575aa614ea04703480b1022c",
+      ip: "1.15.13.216",
+      tags: ["malware", "cve-2017-0147"],
+      detections: 1,
+      firstReport: new Date(
+        "Sep 21 2023 22:12:05 GMT+0200 (Central European Summer Time)"
+      ).toLocaleDateString(),
+      lastReport: new Date().toLocaleDateString(),
+      submitters: ["submitter1", "submitter2"],
+      icon: "icon",
     };
+    // add id to the report
+    const id = Math.random().toString(36).substr(2, 9);
+    report.id = id;
 
-    // copy the product 25 times
-    for (let i = 0; i < 25; i++) {
-      //change the id of the product to be unique
-      setProducts((prevProducts) => [...prevProducts, { ...product, id: i }]);
-    }
-    console.log(products);
+    //setReports([report]);
+    dispatch(addReport(report));
   }, []);
+
+  useEffect(() => {
+    // Check if all reports are selected
+    if (selectAllChecked) {
+      setSelectedReports(reports);
+      //setSelectedReports(reports);
+      setSelectAllChecked(true);
+    } else {
+      setSelectedReports([]);
+      setSelectAllChecked(false);
+    }
+  }, [selectAllChecked, reports]);
 
   return (
     <div>
@@ -88,13 +58,13 @@ const Browse = () => {
           <div className="flex flex-row items-center w-full">
             <input
               type="checkbox"
-              checked={selectedProducts?.length === products.length}
+              checked={selectedReports?.length === reports.length}
               className="h-5 w-5 rounded-md border-gray-300 dark:border-white selection:border-blue-500"
               onChange={(e) => {
                 if (e.target.checked) {
-                  setSelectedProducts(products);
+                  setSelectedReports(reports);
                 } else {
-                  setSelectedProducts([]);
+                  setSelectedReports([]);
                 }
               }}
             />
@@ -106,7 +76,7 @@ const Browse = () => {
               activeButtonStyle="rounded-sm w-3/12 border-b-[3px] border-b-blue-600"
               tabs={[
                 {
-                  label: `Reports ${reportReports.length}/${reportReports.length}`,
+                  label: `Reports ${reports.length}/${reports.length}`,
                   value: "reports",
                 },
                 {
@@ -133,14 +103,17 @@ const Browse = () => {
         </div>
 
         <DataTable
-          value={products}
-          selectionMode={"multiple"}
-          selection={selectedProducts!}
-          onSelectionChange={(e) => setSelectedProducts(e.value)}
+          size="small"
+          value={reports}
+          selection={selectedReports}
+          onSelectionChange={(e) => setSelectedReports(e.value)}
           dataKey="id"
           tableStyle={{ minWidth: "50rem" }}
-          className=" text-gray-700 dark:text-white"
+          className="text-gray-700 dark:text-white"
           paginator
+          cellSelection={false}
+          // make the row not selectable, however, when clicking on the checkbox it will select the row
+          selectionMode="checkbox"
           rows={5}
           rowsPerPageOptions={[5, 10, 25, 50]}
           paginatorTemplate={
@@ -148,15 +121,50 @@ const Browse = () => {
           }
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
         >
+          <Column selectionMode="multiple" style={{ width: "3rem" }}></Column>
+          {/* Empty header for the first column */}
           <Column
-            selectionMode="multiple"
-            headerStyle={{ width: "3rem" }}
+            header={<div></div>}
+            body={(rowData: IReport) => (
+              <Link to={"/"} className="w-full">
+                <span className="font-normal text-base">
+                  {rowData.hash.toUpperCase()}
+                </span>
+                <br />
+                <span className="text-base text-gray-400">{rowData.ip}</span>
+                <br />
+                <div className="flex flex-row items-center gap-x-2 mt-1">
+                  {rowData.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="dark:bg-gray-800 rounded-md p-[2px] text-sm"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </Link>
+            )}
           ></Column>
-          {/* Make a cell already selected */}
-          <Column field="code" header="Code"></Column>
-          <Column field="name" header="Name"></Column>
-          <Column field="category" header="Category"></Column>
-          <Column field="quantity" header="Quantity"></Column>
+          <Column
+            field="detections"
+            header="Detections"
+            className="text-center"
+          ></Column>
+          <Column header="First Report" field={"firstReport"}></Column>
+          <Column header="Last Report" field={"lastReport"}></Column>
+          <Column
+            header="Submitters"
+            body={(rowData: IReport) => rowData.submitters.length}
+            className="text-center"
+          ></Column>
+          <Column
+            body={(rowData: IReport) => (
+              <div className="text-center">
+                <img src={rowData.icon} alt="Icon" className="w-8 h-8" />
+              </div>
+            )}
+          ></Column>
         </DataTable>
       </div>
     </div>
