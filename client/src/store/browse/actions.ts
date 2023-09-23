@@ -5,17 +5,9 @@ export const ADD_REPORT = "ADD_REPORT";
 export const REMOVE_REPORT = "REMOVE_REPORT";
 export const UPDATE_REPORT = "UPDATE_REPORT";
 
-export interface IReport {
-  id?: string;
-  hash: string;
-  ip: string;
-  tags: string[];
-  detections: number;
-  firstReport: string;
-  lastReport: string;
-  submitters: string[];
-  icon: string;
-}
+
+
+
 
 export interface AddReportAction extends Action<typeof ADD_REPORT> {
   payload: IReport;

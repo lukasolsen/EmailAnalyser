@@ -6,14 +6,14 @@ import { FaFileDownload, FaFileExport } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
-import { IReport, addReport } from "../store/reports/actions";
+import { addReport } from "../store/browse/actions";
 
 const Browse = () => {
   const dispatch = useDispatch();
 
   const [activeTab, setActiveTab] = useState("reports");
   //const [reports, setReports] = useState<Report[]>([]);
-  const reports = useSelector((state: RootState) => state.reports.reports);
+  const reports = useSelector((state: RootState) => state.browse.reports);
 
   const [selectedReports, setSelectedReports] = useState<IReport[]>([]);
   const [selectAllChecked, setSelectAllChecked] = useState(false);

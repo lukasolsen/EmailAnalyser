@@ -4,7 +4,6 @@ import {
   FaExclamationTriangle,
   FaExternalLinkAlt,
 } from "react-icons/fa";
-import { YaraResults } from "../../pages/Report";
 
 interface YaraListProps {
   yaraDetections: YaraResults[];
@@ -22,7 +21,7 @@ const YaraList: React.FC<YaraListProps> = ({ yaraDetections }) => {
         {yaraDetections.map((detection) => {
           return (
             <div
-              key={detection.rule}
+              key={detection.ruleset_id}
               className="border border-blue-dark-300 p-4 rounded-lg flex items-start"
             >
               <div className="mr-4">

@@ -1,6 +1,5 @@
 import {
   ADD_REPORT,
-  IReport,
   REMOVE_REPORT,
   ReportActionTypes,
   UPDATE_REPORT,
